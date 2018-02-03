@@ -1,7 +1,9 @@
 # wikihistory
 
-A tool for visualising the history of wikipedia articles.
+A client-side tool for visualising the history of Wikipedia articles.
 
 # for
 
-journalists, transparency advocates, data-nerds 
+- Transparency advocates
+- Journalists
+- Data nerds
