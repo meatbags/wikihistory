@@ -9,7 +9,6 @@ class Page {
     // parse query results
 
     console.log(page);
-
     /*
     res
       continue
@@ -26,4 +25,4 @@ class Page {
   }
 }
 
-export default Page;
+export { Page };

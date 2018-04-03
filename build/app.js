@@ -45,6 +45,11 @@ var wikihistory =
 /******/ 		}
 /******/ 	};
 /******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -60,203 +65,59 @@ var wikihistory =
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/app.js");
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/******/ ({
+
+/***/ "./src/app.js":
+/*!********************!*\
+  !*** ./src/app.js ***!
+  \********************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-var _master = __webpack_require__(2);
-
-var _master2 = _interopRequireDefault(_master);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var App = function App() {
-  _classCallCheck(this, App);
-
-  this.master = new _master2.default();
-};
-
-window.onload = function () {
-  var app = new App();
-};
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _modules_master__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/master */ \"./src/modules/master.js\");\n\n\nclass App {\n  constructor() {\n    this.master = new _modules_master__WEBPACK_IMPORTED_MODULE_0__[\"Master\"]();\n  }\n}\n\nwindow.onload = () => {\n  const app = new App();\n};\n\n//# sourceURL=webpack://wikihistory/./src/app.js?");
 
 /***/ }),
-/* 1 */,
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+
+/***/ "./src/modules/api.js":
+/*!****************************!*\
+  !*** ./src/modules/api.js ***!
+  \****************************/
+/*! exports provided: API */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _api = __webpack_require__(3);
-
-var _api2 = _interopRequireDefault(_api);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Master = function Master() {
-  _classCallCheck(this, Master);
-
-  this.api = new _api2.default();
-
-  // test
-
-  this.api.getPage('Dark Souls');
-};
-
-exports.default = Master;
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"API\", function() { return API; });\n/* harmony import */ var _page__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./page */ \"./src/modules/page.js\");\n\n\nclass API {\n  constructor() {\n    // api interface\n    // NOTE use action=parse to get html in .content, setting rvprop=content reduces rate limit / 10 (500 -> 50)\n    this.pages = {};\n    this.users = {};\n    this.endpoint = 'https://en.wikipedia.org/w/api.php';\n    this.action = '?action=query';\n    this.props = '&prop=revisions&rvprop=content|ids|user|userid|flags|tags|timestamp|comment|user&rvlimit=5';\n    this.format = '&format=json&formatversion=2';\n  }\n\n  parsePage(key, page) {\n    // create page, user\n    if (!this.pages[key]) {\n      this.pages[key] = new _page__WEBPACK_IMPORTED_MODULE_0__[\"Page\"](key);\n    }\n    this.pages[key].parsePage(page);\n  }\n\n  getPage(title) {\n    // build request string, get page\n    const key = title.replace(/ /g, '%20');\n    const req = `${this.endpoint}${this.action}&titles=${key}${this.props}${this.format}`;\n\n    // send request\n    $.ajax({\n      type: 'POST',\n      url: 'call_api.php',\n      dataType: 'json',\n      data: { request: req },\n      success: page => {\n        this.parsePage(key, page);\n      },\n      error: err => {\n        console.warn('Error', err);\n      }\n    });\n  }\n\n  getMore() {\n    // get more revisions of previous request\n  }\n}\n\n\n\n//# sourceURL=webpack://wikihistory/./src/modules/api.js?");
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
+
+/***/ "./src/modules/master.js":
+/*!*******************************!*\
+  !*** ./src/modules/master.js ***!
+  \*******************************/
+/*! exports provided: Master */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _page = __webpack_require__(4);
-
-var _page2 = _interopRequireDefault(_page);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var API = function () {
-  function API() {
-    _classCallCheck(this, API);
-
-    // api interface
-
-    // NOTE use action=parse to get html in .content
-    // NOTE setting rvprop=content reduces rate limit / 10 (500 -> 50)
-    this.pages = {};
-    this.users = {};
-    this.endpoint = 'https://en.wikipedia.org/w/api.php';
-    this.action = '?action=query';
-    this.props = '&prop=revisions&rvprop=content|ids|user|userid|flags|tags|timestamp|comment|user&rvlimit=5';
-    this.format = '&format=json&formatversion=2';
-  }
-
-  _createClass(API, [{
-    key: 'parsePage',
-    value: function parsePage(key, page) {
-      // create page, user
-
-      if (!this.pages[key]) {
-        this.pages[key] = new _page2.default(key);
-      }
-
-      this.pages[key].parseQuery(page);
-    }
-  }, {
-    key: 'getPage',
-    value: function getPage(title) {
-      var _this = this;
-
-      // build request string, get page
-
-      var key = title.replace(/ /g, '%20');
-      var req = '' + this.endpoint + this.action + '&titles=' + key + this.props + this.format;
-
-      // send request
-
-      $.ajax({
-        type: 'POST',
-        url: 'call_api.php',
-        dataType: 'json',
-        data: { request: req },
-        success: function success(page) {
-          _this.parsePage(key, page);
-        },
-        error: function error(err) {
-          console.warn('Error', err);
-        }
-      });
-    }
-  }, {
-    key: 'getMore',
-    value: function getMore() {
-      // get more revisions of previous request
-    }
-  }]);
-
-  return API;
-}();
-
-exports.default = API;
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Master\", function() { return Master; });\n/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ \"./src/modules/api.js\");\n\n\nclass Master {\n  constructor() {\n    this.api = new _api__WEBPACK_IMPORTED_MODULE_0__[\"API\"]();\n\n    // test\n    this.api.getPage('Dark Souls');\n  }\n}\n\n\n\n//# sourceURL=webpack://wikihistory/./src/modules/master.js?");
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
+
+/***/ "./src/modules/page.js":
+/*!*****************************!*\
+  !*** ./src/modules/page.js ***!
+  \*****************************/
+/*! exports provided: Page */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Page = function () {
-  function Page(title) {
-    _classCallCheck(this, Page);
-
-    // page data container
-
-    this.title = title;
-  }
-
-  _createClass(Page, [{
-    key: "parsePage",
-    value: function parsePage(page) {
-      // parse query results
-
-      console.log(page);
-
-      /*
-      res
-        continue
-          continue ||
-          rvcontinue
-        limit
-          revisions 50
-        query
-          pages[]
-            id
-            title
-            revision
-          */
-    }
-  }]);
-
-  return Page;
-}();
-
-exports.default = Page;
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Page\", function() { return Page; });\nclass Page {\n  constructor(title) {\n    // page data container\n\n    this.title = title;\n  }\n\n  parsePage(page) {\n    // parse query results\n\n    console.log(page);\n    /*\r\n    res\r\n      continue\r\n        continue ||\r\n        rvcontinue\r\n      limit\r\n        revisions 50\r\n      query\r\n        pages[]\r\n          id\r\n          title\r\n          revision\r\n        */\n  }\n}\n\n\n\n//# sourceURL=webpack://wikihistory/./src/modules/page.js?");
 
 /***/ })
-/******/ ]);
+
+/******/ });
