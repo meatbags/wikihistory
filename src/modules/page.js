@@ -1,14 +1,15 @@
-import { parseWikiText } from './parser';
+import { Parser } from './parser';
 
 class Page {
-  constructor(title, data) {
+  constructor(data) {
     // page data container
-    this.title = title;
     this.id = data.pageid;
+    this.title = data.title;
     this.currentRevision = 0;
     this.revisions = [];
     this.target = $('<div />', {class: 'page', id: this.id});
     $('.content').append(this.target);
+    this.parser = new Parser();
 
     // set up first page
     this.parsePage(data);
@@ -17,7 +18,7 @@ class Page {
 
   showPage() {
     const rev = this.revisions[this.currentRevision];
-    this.target.html(parseWikiText(rev.content));
+    this.target.html(this.parser.parse(this.title, rev.content, 'page__inner'));
   }
 
   parsePage(page) {

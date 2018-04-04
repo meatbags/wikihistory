@@ -12,4 +12,9 @@ body, html {
 body {
   font-family: $fontStack;
   font-size: $fontSize;
+  line-height: $lineHeight;
+}
+
+a {
+  text-decoration: underline;
 }

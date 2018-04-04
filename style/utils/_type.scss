@@ -1,2 +1,13 @@
-$fontStack: 'Karla', sans-serif;
-$fontSize: 14px;
+$fontStack: 'Lato', sans-serif;
+$fontSerif: 'Playfair Display', sans-serif;
+$lineHeight: 1.5;
+$fontSize: 12px;
+$fontLarge: 20px;
+
+.bold {
+  font-weight: bold;
+}
+
+.italics {
+  font-style: italic;
+}

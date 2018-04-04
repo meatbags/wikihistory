@@ -1,0 +1,31 @@
+.page {
+  .page__inner {
+    width: 100%;
+    padding: $space;
+
+    .main-title {
+      padding-top: $space * 2;
+      padding-bottom: $space;
+      font-size: $fontLarge;
+      font-family: $fontSerif;
+      width: 100%;
+    }
+
+    .section-title {
+      padding-top: $space * 2;
+      padding-bottom: $space;
+      font-size: $fontLarge;
+      width: 100%;
+      font-family: $fontSerif;
+    }
+
+    .subsection-title {
+      padding-top: $space * 2;
+      padding-bottom: $space;
+      font-size: $fontLarge;
+      width: 100%;
+      font-style: italic;
+      font-family: $fontSerif;
+    }
+  }
+}
