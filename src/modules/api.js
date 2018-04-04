@@ -1,4 +1,5 @@
 import { Page } from './page';
+import { samples } from './samples';
 
 class API {
   constructor() {
@@ -12,28 +13,44 @@ class API {
     this.format = '&format=json&formatversion=2';
   }
 
-  parsePage(key, page) {
-    // create page, user
+  parseResponse(key, res) {
+    // page
     if (!this.pages[key]) {
-      this.pages[key] = new Page(key);
+      this.pages[key] = new Page(key, res.query.pages[0]);
+    } else {
+      this.pages[key].parsePage(res.query.pages[0]);
     }
-    this.pages[key].parsePage(page);
   }
 
   getPage(title) {
     // build request string, get page
-    const key = title.replace(/ /g, '%20');
-    const req = `${this.endpoint}${this.action}&titles=${key}${this.props}${this.format}`;
+    const key = this.formatTitle(title);
+    const req = `${this.endpoint}${this.action}&titles=${title.replace(/ /g, '%20')}${this.props}${this.format}`;
+    console.log(req);
 
-    // send request
+    // request
     $.ajax({
       type: 'POST',
       url: 'call_api.php',
       dataType: 'json',
       data: {request: req},
-      success: (page) => { this.parsePage(key, page); },
-      error: (err) => { console.warn('Error', err); }
+      success: (res) => {
+        this.parseResponse(key, res);
+      },
+      error: (err) => {
+        console.warn('Error', err);
+      }
     });
+  }
+
+  sampleRequest(title) {
+    const key = this.formatTitle(title);
+    title = title.replace(/ /g, '%20');
+    this.parseResponse(, samples[])
+  }
+
+  formatTitle(title) {
+    return title.toLowerCase().replace(/ /g, '_');
   }
 
   getMore() {

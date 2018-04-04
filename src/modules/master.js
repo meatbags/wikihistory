@@ -5,7 +5,7 @@ class Master {
     this.api = new API();
 
     // test
-    this.api.getPage('Dark Souls');
+    this.api.sampleRequest('Dark Souls');
   }
 }
 

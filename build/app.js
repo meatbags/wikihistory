@@ -89,10 +89,9 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _mod
   !*** ./src/modules/api.js ***!
   \****************************/
 /*! exports provided: API */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"API\", function() { return API; });\n/* harmony import */ var _page__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./page */ \"./src/modules/page.js\");\n\n\nclass API {\n  constructor() {\n    // api interface\n    // NOTE use action=parse to get html in .content, setting rvprop=content reduces rate limit / 10 (500 -> 50)\n    this.pages = {};\n    this.users = {};\n    this.endpoint = 'https://en.wikipedia.org/w/api.php';\n    this.action = '?action=query';\n    this.props = '&prop=revisions&rvprop=content|ids|user|userid|flags|tags|timestamp|comment|user&rvlimit=5';\n    this.format = '&format=json&formatversion=2';\n  }\n\n  parsePage(key, page) {\n    // create page, user\n    if (!this.pages[key]) {\n      this.pages[key] = new _page__WEBPACK_IMPORTED_MODULE_0__[\"Page\"](key);\n    }\n    this.pages[key].parsePage(page);\n  }\n\n  getPage(title) {\n    // build request string, get page\n    const key = title.replace(/ /g, '%20');\n    const req = `${this.endpoint}${this.action}&titles=${key}${this.props}${this.format}`;\n\n    // send request\n    $.ajax({\n      type: 'POST',\n      url: 'call_api.php',\n      dataType: 'json',\n      data: { request: req },\n      success: page => {\n        this.parsePage(key, page);\n      },\n      error: err => {\n        console.warn('Error', err);\n      }\n    });\n  }\n\n  getMore() {\n    // get more revisions of previous request\n  }\n}\n\n\n\n//# sourceURL=webpack://wikihistory/./src/modules/api.js?");
+eval("throw new Error(\"Module build failed: SyntaxError: X:/xampp/htdocs/github/wikihistory/src/modules/api.js: Unexpected token (49:23)\\n\\n\\u001b[0m \\u001b[90m 47 | \\u001b[39m    \\u001b[36mconst\\u001b[39m key \\u001b[33m=\\u001b[39m \\u001b[36mthis\\u001b[39m\\u001b[33m.\\u001b[39mformatTitle(title)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 48 | \\u001b[39m    title \\u001b[33m=\\u001b[39m title\\u001b[33m.\\u001b[39mreplace(\\u001b[35m/ /g\\u001b[39m\\u001b[33m,\\u001b[39m \\u001b[32m'%20'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 49 | \\u001b[39m    \\u001b[36mthis\\u001b[39m\\u001b[33m.\\u001b[39mparseResponse(\\u001b[33m,\\u001b[39m samples[])\\n \\u001b[90m    | \\u001b[39m                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 50 | \\u001b[39m  }\\n \\u001b[90m 51 | \\u001b[39m\\n \\u001b[90m 52 | \\u001b[39m  formatTitle(title) {\\u001b[0m\\n\");\n\n//# sourceURL=webpack://wikihistory/./src/modules/api.js?");
 
 /***/ }),
 
@@ -104,19 +103,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Master\", function() { return Master; });\n/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ \"./src/modules/api.js\");\n\n\nclass Master {\n  constructor() {\n    this.api = new _api__WEBPACK_IMPORTED_MODULE_0__[\"API\"]();\n\n    // test\n    this.api.getPage('Dark Souls');\n  }\n}\n\n\n\n//# sourceURL=webpack://wikihistory/./src/modules/master.js?");
-
-/***/ }),
-
-/***/ "./src/modules/page.js":
-/*!*****************************!*\
-  !*** ./src/modules/page.js ***!
-  \*****************************/
-/*! exports provided: Page */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Page\", function() { return Page; });\nclass Page {\n  constructor(title) {\n    // page data container\n\n    this.title = title;\n  }\n\n  parsePage(page) {\n    // parse query results\n\n    console.log(page);\n    /*\r\n    res\r\n      continue\r\n        continue ||\r\n        rvcontinue\r\n      limit\r\n        revisions 50\r\n      query\r\n        pages[]\r\n          id\r\n          title\r\n          revision\r\n        */\n  }\n}\n\n\n\n//# sourceURL=webpack://wikihistory/./src/modules/page.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Master\", function() { return Master; });\n/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ \"./src/modules/api.js\");\n\n\nclass Master {\n  constructor() {\n    this.api = new _api__WEBPACK_IMPORTED_MODULE_0__[\"API\"]();\n\n    // test\n    this.api.sampleRequest('Dark Souls');\n  }\n}\n\n\n\n//# sourceURL=webpack://wikihistory/./src/modules/master.js?");
 
 /***/ })
 
