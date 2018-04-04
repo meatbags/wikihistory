@@ -29,18 +29,4 @@ class Page {
   }
 }
 
-/*
-res
-  continue
-    - continue ||
-    - rvcontinue
-  limit
-    - revisions 50
-  query
-    pages[]
-      - id
-      - title
-      - revision
-*/
-
 export { Page };

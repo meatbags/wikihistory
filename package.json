@@ -30,6 +30,7 @@
     "node-normalize-scss": "^3.0.0",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13",
     "webpack-preset": "^0.2.0",
     "webpack-preset-babel": "^0.2.0"
   }

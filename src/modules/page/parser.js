@@ -1,11 +1,11 @@
-import { config } from './config';
+import { config } from '../config';
 
 class Parser {
   constructor() {
     this.urlBase = config.urlBase;
     this.replace = {
-      "{{": ["<div>"],
-      "}}": ["</div>"],
+      "{{": ["<span class='tag'>"],
+      "}}": ["</span>"],
       "\\[\\[": ["<a>"],
       "\\]\\]": ["</a>"],
       "===": ["<div class='subsection-title'>", "</div>"],
