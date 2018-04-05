@@ -1,9 +1,7 @@
 # wikihistory
 
-A client-side tool for visualising the history of Wikipedia articles.
+Easily visualise and traverse the revision history of a wiki page.
 
-# for
+# why
 
-- Transparency advocates
-- Journalists
-- Data nerds
+This tool is for: transparency advocates, data-nerds, journalists, fun.

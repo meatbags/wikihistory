@@ -20,7 +20,7 @@ class Page {
     const rev = this.revisions[this.currentRevision];
     this.target.html(this.parser.parse(this.title, rev.content, 'page__inner'));
   }
-
+  
   parsePage(page) {
     // parse page
     for (var i=0, len=page.revisions.length; i<len; ++i) {
