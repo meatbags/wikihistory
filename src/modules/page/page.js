@@ -1,4 +1,4 @@
-import { Parser } from './parser';
+import { Revision } from './revision';
 
 class Page {
   constructor(data) {
@@ -9,22 +9,26 @@ class Page {
     this.revisions = [];
     this.target = $('<div />', {class: 'page', id: this.id});
     $('.content').append(this.target);
-    this.parser = new Parser();
 
-    // set up first page
-    this.parsePage(data);
-    this.showPage();
+    // set up page
+    this.addPageData(data);
+
+    // show first page
+    this.target.html(
+      this.revisions[this.currentRevision].getParsedContent()
+    );
   }
 
   showPage() {
-    const rev = this.revisions[this.currentRevision];
-    this.target.html(this.parser.parse(this.title, rev.content, 'page__inner'));
+    //const rev = this.revisions[this.currentRevision];
+    //this.target.html(this.parser.parse(this.title, rev.content, 'page__inner'));
   }
-  
-  parsePage(page) {
-    // parse page
+
+  addPageData(page) {
     for (var i=0, len=page.revisions.length; i<len; ++i) {
-      this.revisions.push(page.revisions[i]);
+      this.revisions.push(
+        new Revision(this.title, page.revisions[i])
+      );
     }
   }
 }

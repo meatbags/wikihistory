@@ -23,7 +23,7 @@ class Parser {
       "quote": "quote",
       "official website": "ext-link"
     };
-    this.remove = ["about||", "expand section", "use", "infobox", "video game reviews"];
+    this.remove = ["thumb", "about||", "expand section", "use", "infobox", "video game reviews"];
   }
 
   parse(title, wikitext, wrapperClass) {
@@ -108,7 +108,7 @@ class Parser {
     wrapper.find('.section-title').each((i, e) => {
       const $e = $(e);
       const title = $e.text().trim().replace(/ /g, '-');
-      $e.parent().addClass('section' + title);
+      $e.parent().data('title', title);
     });
   }
 
