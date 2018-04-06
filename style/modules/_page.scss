@@ -3,29 +3,49 @@
     width: 100%;
     padding: $space;
 
-    .main-title {
-      padding-top: $space * 2;
-      padding-bottom: $space;
-      font-size: $fontLarge;
-      font-family: $fontSerif;
-      width: 100%;
+    .section {
+      margin-bottom: $space * 2;
+
+      .section-title {
+        font-size: $fontLarge;
+        width: 100%;
+        font-family: $fontSerif;
+      }
     }
 
-    .section-title {
-      padding-top: $space * 2;
-      padding-bottom: $space;
-      font-size: $fontLarge;
-      width: 100%;
-      font-family: $fontSerif;
+    .notelist {
+      padding-left: $space;
+
+      .note {
+        width: 100%;
+        display: flex;
+
+        a {
+          width: $space * 2;
+        }
+      }
     }
 
-    .subsection-title {
-      padding-top: $space * 2;
-      padding-bottom: $space;
-      font-size: $fontLarge;
+    .reflist {
       width: 100%;
-      font-style: italic;
-      font-family: $fontSerif;
+      display: flex;
+
+      .col {
+        width: 33.33%;
+        padding-left: $space;
+        display: flex;
+        flex-direction: column;
+
+        .citation {
+          .refs {
+            padding-left: $space / 2;
+
+            .r {
+              padding-right: $space / 2;
+            }
+          }
+        }
+      }
     }
   }
 }
