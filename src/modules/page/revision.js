@@ -29,21 +29,20 @@ class Revision {
     });
   }
 
-  compare(rev) {
+  comparePrevious(rev) {
     // compare revisions, mark changes, analyse
-    const now = '1, 2, 3, 4';
-    const then = '2, 3, 4';
-    this.analyser.analyse(now, then);
-    this.analyser.show($('#section-Dark-Souls'));
-
     for (var key in this.sections) {
       if (this.sections.hasOwnProperty(key)) {
-        $(key).parent().addClass('new');;
-
         if (rev.sections.hasOwnProperty(key)) {
-
+          this.analyser.analyse(this.sections[key], rev.sections[key]);
+          this.analyser.mark($(key));
         } else {
-
+          // new section
+          const parent = $(key).parent();
+          parent.addClass('new');
+          if (parent.data('anchor')) {
+            $(parent.data('anchor')).addClass('new');
+          }
         }
       }
     }

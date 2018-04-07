@@ -73,10 +73,10 @@ class Parser {
     });
 
     // construct
-    this.parseLinks(wrapper);
-    this.parseNotes(wrapper);
-    this.parseExternalLinks(wrapper);
-    this.parseReferences(wrapper);
+    //this.parseLinks(wrapper);
+    //this.parseNotes(wrapper);
+    //this.parseExternalLinks(wrapper);
+    //this.parseReferences(wrapper);
     this.parseQuotes(wrapper);
     this.parseSections(wrapper);
   }
@@ -126,9 +126,11 @@ class Parser {
       // contents box
       if (i != 0) {
         const anchor = `anchor-${title}`;
+        const anchorId = i + anchor;
         let text = $(e).text();
         let itemClass = 'item';
         $parent.attr('id', anchor);
+        $parent.data('anchor', '#' + anchorId)
 
         if ($(e).hasClass('sub-section')) {
           subsec++;
@@ -140,7 +142,7 @@ class Parser {
           text = `${sec} ${text}`;
         }
 
-        const $item = $('<div />', {class: itemClass}).append($('<a />', {href: `#${anchor}`, text: text}))
+        const $item = $('<div />', {class: itemClass, id: anchorId}).append($('<a />', {href: `#${anchor}`, text: text}))
         $contents.append($item);
       }
     });

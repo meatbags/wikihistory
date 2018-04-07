@@ -22,7 +22,7 @@ class Page {
     this.target.html(
       this.revisions[this.currentRevision].getHtml()
     );
-    a.compare(b);
+    a.comparePrevious(b);
   }
 }
 
