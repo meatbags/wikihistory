@@ -1,4 +1,5 @@
 import { Parser } from './parser';
+import * as Analysis from './analysis';
 
 class Revision {
   constructor(title, data) {
@@ -22,15 +23,17 @@ class Revision {
       const title = $(e).data('title');
       this.sections[title] = $(e).text().trim();
     });
-    console.log(this.sections);
   }
 
-  getParsedContent() {
+  getHtml() {
     return this.parsed;
   }
 
   compare(rev) {
-    // compare revisions, mark changes
+    // compare revisions, mark changes, analyse
+    const test1 = 'a b c d e f';
+    const test2 = 'a b c d e f';
+    Analysis.editDistance(test1, test2);
   }
 }
 

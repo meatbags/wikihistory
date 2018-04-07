@@ -9,7 +9,7 @@ class Parser {
       "}}": ["</div>"],
       "\\[\\[": ["<a>"],
       "\\]\\]": ["</a>"],
-      "===": ["<div class='section-title italics'>", "</div>"],
+      "===": ["<div class='section-title sub-section italics'>", "</div>"],
       "==": ["<div class='section-title'>", "</div>"],
       "'''''": ["<span class='bold italics'>", "</span>"],
       "''": ["<span class='italics'>", "</span>"]
@@ -92,9 +92,9 @@ class Parser {
       // close
       if (i != 0) {
         $(e).before(close);
-      }
-      if (i == last) {
-        wrapper.append(close);
+        if (i == last) {
+          wrapper.append(close);
+        }
       }
 
       // open
@@ -103,13 +103,41 @@ class Parser {
 
     const openRegex = new RegExp(open, 'g');
     const closeRegex = new RegExp(close, 'g');
-    const html = wrapper.html().replace(openRegex, '<div class="section">').replace(closeRegex, '</div>').replace(/<br><br><br>/g, '<br>').replace(/<br><br>/g, '<br>');
+    const html = wrapper.html().replace(openRegex, '<div class="section">').replace(closeRegex, '</div>').replace(/<br><br><br>/g, '<br>');
     wrapper.html(html);
+
+    // format sections, add to contents
+    let sec = 0;
+    let subsec = 0;
+    const $contents = $('<div />', {class: 'contents'});
     wrapper.find('.section-title').each((i, e) => {
       const $e = $(e);
       const title = $e.text().trim().replace(/ /g, '-');
-      $e.parent().data('title', title);
+      const $parent = $e.parent();
+      $parent.data('title', title);
+
+      // contents box
+      if (i != 0) {
+        const anchor = `anchor-${title}`;
+        let text = $(e).text();
+        let itemClass = 'item';
+        $parent.attr('id', anchor);
+
+        if ($(e).hasClass('sub-section')) {
+          subsec++;
+          text = `${sec}.${subsec} ${text}`;
+          itemClass = itemClass + ' sub-section';
+        } else {
+          sec++;
+          subsec = 0;
+          text = `${sec} ${text}`;
+        }
+
+        const $item = $('<div />', {class: itemClass}).append($('<a />', {href: `#${anchor}`, text: text}))
+        $contents.append($item);
+      }
     });
+    wrapper.find('.section').eq(0).after($contents);
   }
 
   parseNotes(wrapper) {

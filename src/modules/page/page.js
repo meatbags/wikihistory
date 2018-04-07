@@ -12,24 +12,17 @@ class Page {
 
     // set up page
     this.addPageData(data);
-
-    // show first page
-    this.target.html(
-      this.revisions[this.currentRevision].getParsedContent()
-    );
-  }
-
-  showPage() {
-    //const rev = this.revisions[this.currentRevision];
-    //this.target.html(this.parser.parse(this.title, rev.content, 'page__inner'));
   }
 
   addPageData(page) {
-    for (var i=0, len=page.revisions.length; i<len; ++i) {
-      this.revisions.push(
-        new Revision(this.title, page.revisions[i])
-      );
-    }
+    // sample page
+    const a = new Revision(this.title, page.revisions[0]);
+    const b = new Revision(this.title, page.revisions[1]);
+    this.revisions.push(a, b);
+    this.target.html(
+      this.revisions[this.currentRevision].getHtml()
+    );
+    a.compare(b);
   }
 }
 

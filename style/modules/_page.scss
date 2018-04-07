@@ -10,6 +10,32 @@
         font-size: $fontLarge;
         width: 100%;
         font-family: $fontSerif;
+        border-bottom: 1px solid black;
+
+        &.sub-section {
+          border-bottom: none;
+        }
+
+        &.main-title {
+          font-size: $fontMax;
+        }
+      }
+    }
+
+    .contents {
+      width: auto;
+      margin-bottom: $space * 2;
+      padding-left: $space * 2;
+
+      .item {
+        a {
+          flex: 1;
+          padding: $space / 4;
+        }
+
+        &.sub-section {
+          padding-left: $space * 4;
+        }
       }
     }
 
