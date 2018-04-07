@@ -28,10 +28,6 @@ class Analyser {
 
   }
 
-  newSection(wrapper) {
-    wrapper.html('<span class="new">' + wrapper.html() + '</span>');
-  }
-
   getAmountChanged() {
     return (this.words.total) ? this.words.unique / this.words.total : 0;
   }

@@ -37,10 +37,10 @@ class Revision {
     this.analyser.show($('#section-Dark-Souls'));
 
     for (var key in this.sections) {
-      if (this.section.hasOwnProperty(key)) {
-        this.analyser.newSection($(key));
-        
-        if (rev.section.hasOwnProperty(key)) {
+      if (this.sections.hasOwnProperty(key)) {
+        $(key).parent().addClass('new');;
+
+        if (rev.sections.hasOwnProperty(key)) {
 
         } else {
 

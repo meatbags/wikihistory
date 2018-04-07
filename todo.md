@@ -1,11 +1,16 @@
-# to do
+# basics
+- improve highlighting
+- robust handling of links and inline tags
+- control/ interface
 
-Revision calendar (get all from day/ month/ year)
-Revision timeline (heat-map on timeline)
-Direct compare function (add to analysis board etc.)
+# features
+- revision calendar w/ DMY resolution
+- revision timeline
+- time heat-maps
+- analysis board for direct revision comparison
+- author analysis
 
-# highlight features
-
-Author/ comment (link to author analysis)
-Amount section edited (%)
-Shift, new, to-be-deleted?
+# highlighting, UI
+- author & comment, author hyperlink
+- article leader-boards (most edits, adds, deletes)
+- amount sections edited (kinda arbitrary but fun)
