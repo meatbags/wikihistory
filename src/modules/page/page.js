@@ -19,10 +19,8 @@ class Page {
     const a = new Revision(this.title, page.revisions[0]);
     const b = new Revision(this.title, page.revisions[1]);
     this.revisions.push(a, b);
-    this.target.html(
-      this.revisions[this.currentRevision].getHtml()
-    );
-    a.comparePrevious(b);
+    this.target.html(this.revisions[this.currentRevision].getHtml());
+    //a.comparePrevious(b);
   }
 }
 

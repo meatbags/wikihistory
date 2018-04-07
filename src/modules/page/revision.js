@@ -18,6 +18,9 @@ class Revision {
 
   parse() {
     // parse wikitext, prepare for analysis
+    this.parsed = this.parser.createWrapper(this.title, this.content, 'page__inner');
+
+    /*
     this.parsed = this.parser.parse(this.title, this.content, 'page__inner');
     this.sections = {};
     this.parsed.find('.section').each((i, e) => {
@@ -27,6 +30,7 @@ class Revision {
       p.attr('id', id);
       this.sections[key] = p.text().trim();
     });
+    */
   }
 
   comparePrevious(rev) {

@@ -3,127 +3,85 @@ import { config } from '../config';
 class Parser {
   constructor() {
     this.urlBase = config.urlBase;
-    this.replace = {
-      "\n": ["<br />"],
-      "{{": ["<div class='tag'>"],
-      "}}": ["</div>"],
-      "\\[\\[": ["<a>"],
-      "\\]\\]": ["</a>"],
-      "===": ["<div class='section-title sub-section italics'>", "</div>"],
-      "==": ["<div class='section-title'>", "</div>"],
-      "'''''": ["<span class='bold italics'>", "</span>"],
-      "''": ["<span class='italics'>", "</span>"]
+    this.map = {
+      placeholder: '@span~!',
+      tags: {
+        "===": ["<div class='section-title sub-section italics'>", "</div>"],
+        "==": ["<div class='section-title'>", "</div>"],
+        "\n": ["<br />"],
+        "{{": ["<span class='c'>"],
+        "}}": ["</span>"],
+        "\\[\\[": ["<a>"],
+        "\\]\\]": ["</a>"],
+        "'''''": ["<span class='bold italics'>", "</span>"],
+        "''": ["<span class='italics'>", "</span>"]
+      },
+      classes: {
+        "efn": "note-ref",
+        "notelist": "notelist",
+        "cite": "cite",
+        "citation": "cite",
+        "reflist": "reflist",
+        "quote": "quote",
+        "official website": "ext-link"
+      },
+      delete: ["thumb", "about||", "expand section", "use", "infobox", "video game reviews"]
     };
-    this.tags = {
-      "efn": "note-ref",
-      "notelist": "notelist",
-      "cite": "cite",
-      "citation": "cite",
-      "reflist": "reflist",
-      "quote": "quote",
-      "official website": "ext-link"
-    };
-    this.remove = ["thumb", "about||", "expand section", "use", "infobox", "video game reviews"];
   }
 
-  parse(title, wikitext, wrapperClass) {
-    // wikitext -> jquery object
-    const wrapper = $('<div />', {class: wrapperClass});
-
-    // replace
-    for (var key in this.replace) {
-      if (this.replace.hasOwnProperty(key)) {
-        if (this.replace[key].length == 1) {
-          wikitext = wikitext.replace(new RegExp(key, 'g'), this.replace[key][0]);
-        } else {
-          const len = this.replace[key].length;
-          let n = 0;
-          wikitext = wikitext.replace(new RegExp(key, 'g'), (x) => {
-            const i = n++ % len;
-            return this.replace[key][i];
-          });
-        }
-      }
-    }
-
-    // build object
-    wrapper.html(wikitext);
+  createWrapper(title, wikitext, wrapperClass) {
+    // get html wrapper for wikitext
+    const wrapper = this.parse(wikitext).addClass(wrapperClass);
     wrapper.prepend($('<div />', {html: title, class:'section-title main-title'}));
-    this.build(wrapper);
+    this.addSections(wrapper);
+
+    // temp, rm all spans
+    wrapper.find('.section-paragraph > span, .section-paragraph > a, .section-paragraph > ref')
+      .before(this.map.placeholder).remove();
 
     return wrapper;
   }
 
-  build(wrapper) {
-    // tags -> classes
-    wrapper.find('.tag').each((i, e) => {
-      const lower = e.innerHTML.toLowerCase();
-      for (var key in this.tags) {
-        if (this.tags.hasOwnProperty(key)) {
-          if (lower.indexOf(key) == 0) {
-            e.classList.add(this.tags[key]);
-          }
-        }
-      }
-      for (var i=0, len=this.remove.length; i<len; ++i) {
-        if (lower.indexOf(this.remove[i]) == 0) {
-          $(e).remove();
-        }
-      }
-    });
-
-    // construct
-    //this.parseLinks(wrapper);
-    //this.parseNotes(wrapper);
-    //this.parseExternalLinks(wrapper);
-    //this.parseReferences(wrapper);
-    this.parseQuotes(wrapper);
-    this.parseSections(wrapper);
-  }
-
-  parseSections(wrapper) {
+  addSections(wrapper) {
     const sections = wrapper.find('.section-title');
     const last = sections.length - 1;
     const open = '{{{{';
     const inner = '{{}}'
     const close = '}}}}';
 
-    // use replace to avoid malformed html
+    // add tags
     sections.each((i, e) => {
-      // close
       if (i != 0) {
         $(e).before(close);
         if (i == last) {
           wrapper.append(close);
         }
       }
-
-      // open
       $(e).before(open);
       $(e).after(inner);
     });
 
-    const openRegex = new RegExp(open, 'g');
-    const innerRegex = new RegExp(inner, 'g');
-    const closeRegex = new RegExp(close, 'g');
-    const html = wrapper.html()
-      .replace(openRegex, '<div class="section">')
-      .replace(innerRegex, '<div class="section-paragraph">')
-      .replace(closeRegex, '</div></div>')
-      .replace(/<br><br><br>/g, '<br>');
-    wrapper.html(html);
+    // create html
+    wrapper.html(
+      wrapper.html()
+        .replace(new RegExp(open, 'g'), '<div class="section">')
+        .replace(new RegExp(inner, 'g'), '<div class="section-paragraph">')
+        .replace(new RegExp(close, 'g'), '</div></div>')
+        .replace(/<br><br><br>/g, '<br>')
+    );
 
-    // format sections, add to contents
+    // format sections
     let sec = 0;
     let subsec = 0;
     const $contents = $('<div />', {class: 'contents'});
+    wrapper.find('.section').eq(0).after($contents);
     wrapper.find('.section-title').each((i, e) => {
       const $e = $(e);
       const title = $e.text().trim().replace(/ /g, '-');
       const $parent = $e.parent();
       $parent.data('title', title);
 
-      // contents box
+      // add to contents
       if (i != 0) {
         const anchor = `anchor-${title}`;
         const anchorId = i + anchor;
@@ -146,7 +104,63 @@ class Parser {
         $contents.append($item);
       }
     });
-    wrapper.find('.section').eq(0).after($contents);
+  }
+
+  parse(wikitext) {
+    // prevent accidental placeholders
+    wikitext = wikitext.replace(new RegExp(this.map.placeholder, 'g'), '');
+
+    // html tags
+    for (var key in this.map.tags) {
+      if (this.map.tags.hasOwnProperty(key)) {
+        const tags = this.map.tags[key];
+        const len = tags.length;
+        let i = 0;
+        wikitext = wikitext.replace(new RegExp(key, 'g'), (len == 1) ? tags[i] : (e) => { return tags[i++ % len]; });
+      }
+    }
+
+    // create wrapper
+    const wrapper = $('<div />', {html: wikitext});
+
+    // class tags
+    wrapper.find('.c').each((i, e) => {
+      let ok = false;
+      const match = e.innerHTML.toLowerCase();
+
+      for (var key in this.map.classes) {
+        if (this.map.classes.hasOwnProperty(key)) {
+          if (match.indexOf(key) == 0) {
+            e.classList.add(this.map.classes[key]);
+            ok = true;
+            break;
+          }
+        }
+      }
+
+      // delete
+      if (!ok) {
+        for (var i=0, len=this.map.delete.length; i<len; ++i) {
+          if (match.indexOf(this.map.delete[i]) == 0) {
+            $(e).remove();
+            break;
+          }
+        }
+      }
+    })
+
+    return wrapper;
+  }
+
+  // TODO fix
+
+  build(wrapper) {
+    //this.parseLinks(wrapper);
+    //this.parseNotes(wrapper);
+    //this.parseExternalLinks(wrapper);
+    //this.parseReferences(wrapper);
+    //this.parseQuotes(wrapper);
+    //this.parseSections(wrapper);
   }
 
   parseNotes(wrapper) {
