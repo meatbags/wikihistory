@@ -1,5 +1,5 @@
 import { Parser } from './parser';
-import * as Analysis from './analysis';
+import { Analyser } from './analyser';
 
 class Revision {
   constructor(title, data) {
@@ -12,6 +12,7 @@ class Revision {
     this.comment = data.comment | '';
     this.content = data.content;
     this.parser = new Parser();
+    this.analyser = new Analyser();
     this.parse();
   }
 
@@ -20,20 +21,36 @@ class Revision {
     this.parsed = this.parser.parse(this.title, this.content, 'page__inner');
     this.sections = {};
     this.parsed.find('.section').each((i, e) => {
-      const title = $(e).data('title');
-      this.sections[title] = $(e).text().trim();
+      const id = 'section-' + $(e).data('title');
+      const key = '#' + id;
+      const p = $(e).find('.section-paragraph');
+      p.attr('id', id);
+      this.sections[key] = p.text().trim();
     });
-  }
-
-  getHtml() {
-    return this.parsed;
   }
 
   compare(rev) {
     // compare revisions, mark changes, analyse
-    const test1 = 'a b c d e f';
-    const test2 = 'a b c d e f';
-    Analysis.editDistance(test1, test2);
+    const now = '1, 2, 3, 4';
+    const then = '2, 3, 4';
+    this.analyser.analyse(now, then);
+    this.analyser.show($('#section-Dark-Souls'));
+
+    for (var key in this.sections) {
+      if (this.section.hasOwnProperty(key)) {
+        this.analyser.newSection($(key));
+        
+        if (rev.section.hasOwnProperty(key)) {
+
+        } else {
+
+        }
+      }
+    }
+  }
+
+  getHtml() {
+    return this.parsed;
   }
 }
 

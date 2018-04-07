@@ -84,8 +84,9 @@ class Parser {
   parseSections(wrapper) {
     const sections = wrapper.find('.section-title');
     const last = sections.length - 1;
-    const open = '{{{';
-    const close = '}}}';
+    const open = '{{{{';
+    const inner = '{{}}'
+    const close = '}}}}';
 
     // use replace to avoid malformed html
     sections.each((i, e) => {
@@ -99,11 +100,17 @@ class Parser {
 
       // open
       $(e).before(open);
+      $(e).after(inner);
     });
 
     const openRegex = new RegExp(open, 'g');
+    const innerRegex = new RegExp(inner, 'g');
     const closeRegex = new RegExp(close, 'g');
-    const html = wrapper.html().replace(openRegex, '<div class="section">').replace(closeRegex, '</div>').replace(/<br><br><br>/g, '<br>');
+    const html = wrapper.html()
+      .replace(openRegex, '<div class="section">')
+      .replace(innerRegex, '<div class="section-paragraph">')
+      .replace(closeRegex, '</div></div>')
+      .replace(/<br><br><br>/g, '<br>');
     wrapper.html(html);
 
     // format sections, add to contents
