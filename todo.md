@@ -1,16 +1,16 @@
-# basics
-- improve highlighting
-- robust handling of links and inline tags
-- control/ interface
+# to do
+- control interface, UI
+- minimise unchanged sections
+- lump spans together
+- parse common infoboxes
+- rm uncommon infoboxes
 
-# features
+## future features
 - revision calendar w/ DMY resolution
 - revision timeline
 - time heat-maps
 - analysis board for direct revision comparison
 - author analysis
-
-# highlighting, UI
 - author & comment, author hyperlink
 - article leader-boards (most edits, adds, deletes)
 - amount sections edited (kinda arbitrary but fun)
