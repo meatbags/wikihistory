@@ -13,47 +13,45 @@ class Revision {
     this.content = data.content;
     this.parser = new Parser();
     this.analyser = new Analyser();
+    this.sections = {};
     this.parse();
   }
 
   parse() {
     // parse wikitext, prepare for analysis
-    this.parsed = this.parser.createWrapper(this.title, this.content, 'page__inner');
-
-    /*
-    this.parsed = this.parser.parse(this.title, this.content, 'page__inner');
-    this.sections = {};
-    this.parsed.find('.section').each((i, e) => {
-      const id = 'section-' + $(e).data('title');
-      const key = '#' + id;
+    this.wrapper = this.parser.createWrapper(this.title, this.content, 'page__inner');
+    this.wrapper.find('.section').each((i, e) => {
+      const id = 'section-' + this.parser.sanitise($(e).data('title'));
       const p = $(e).find('.section-paragraph');
       p.attr('id', id);
-      this.sections[key] = p.text().trim();
+      this.sections['#' + id] = p.text().trim();
     });
-    */
   }
 
   comparePrevious(rev) {
     // compare revisions, mark changes, analyse
     for (var key in this.sections) {
       if (this.sections.hasOwnProperty(key)) {
+        const parent = $(key).parent();
+
         if (rev.sections.hasOwnProperty(key)) {
           this.analyser.analyse(this.sections[key], rev.sections[key]);
+          this.analyser.markAnchor($(parent.data('anchor')));
           this.analyser.mark($(key));
         } else {
           // new section
-          const parent = $(key).parent();
           parent.addClass('new');
-          if (parent.data('anchor')) {
-            $(parent.data('anchor')).addClass('new');
-          }
+          $(parent.data('anchor')).addClass('new');
         }
       }
     }
+
+    // reform html
+    this.parser.parseAllTags(this.wrapper);
   }
 
   getHtml() {
-    return this.parsed;
+    return this.wrapper;
   }
 }
 

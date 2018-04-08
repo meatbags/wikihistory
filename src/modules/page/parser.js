@@ -4,18 +4,20 @@ class Parser {
   constructor() {
     this.urlBase = config.urlBase;
     this.map = {
-      placeholder: '@span~!',
-      tags: {
-        "===": ["<div class='section-title sub-section italics'>", "</div>"],
-        "==": ["<div class='section-title'>", "</div>"],
-        "\n": ["<br />"],
-        "{{": ["<span class='c'>"],
-        "}}": ["</span>"],
-        "\\[\\[": ["<a>"],
-        "\\]\\]": ["</a>"],
-        "'''''": ["<span class='bold italics'>", "</span>"],
-        "''": ["<span class='italics'>", "</span>"]
-      },
+      placeholder: '___',
+      tags: [
+        [/=====/, ["<div class='section-title sub-section italics'>", "</div>"]],
+        [/====/, ["<div class='section-title sub-section italics'>", "</div>"]],
+        [/===/, ["<div class='section-title sub-section italics'>", "</div>"]],
+        ["==", ["<div class='section-title'>", "</div>"]],
+        ["\n", ["<br />"]],
+        ["{{", ["<span class='c'>"]],
+        ["}}", ["</span>"]],
+        ["\\[\\[", ["<a>"]],
+        ["\\]\\]", ["</a>"]],
+        ["'''''", ["<span class='bold italics'>", "</span>"]],
+        ["''", ["<span class='italics'>", "</span>"]]
+      ],
       classes: {
         "efn": "note-ref",
         "notelist": "notelist",
@@ -27,6 +29,7 @@ class Parser {
       },
       delete: ["thumb", "about||", "expand section", "use", "infobox", "video game reviews"]
     };
+    this.sections = {};
   }
 
   createWrapper(title, wikitext, wrapperClass) {
@@ -34,10 +37,14 @@ class Parser {
     const wrapper = this.parse(wikitext).addClass(wrapperClass);
     wrapper.prepend($('<div />', {html: title, class:'section-title main-title'}));
     this.addSections(wrapper);
+    this.parseQuotes(wrapper);
 
     // temp, rm all spans
-    wrapper.find('.section-paragraph > span, .section-paragraph > a, .section-paragraph > ref')
-      .before(this.map.placeholder).remove();
+    wrapper.find('.section-paragraph').each((i, e) => {
+      const $e = $(e);
+      const tags = $e.children('span, a, ref').before(this.map.placeholder).remove();
+      $e.parent().find('.section-tags').append(tags);
+    });
 
     return wrapper;
   }
@@ -66,12 +73,12 @@ class Parser {
       wrapper.html()
         .replace(new RegExp(open, 'g'), '<div class="section">')
         .replace(new RegExp(inner, 'g'), '<div class="section-paragraph">')
-        .replace(new RegExp(close, 'g'), '</div></div>')
+        .replace(new RegExp(close, 'g'), '</div><div class="section-tags"></div></div>')
         .replace(/<br><br><br>/g, '<br>')
     );
 
     // format sections
-    let sec = 0;
+    let sec = -1;
     let subsec = 0;
     const $contents = $('<div />', {class: 'contents'});
     wrapper.find('.section').eq(0).after($contents);
@@ -82,27 +89,28 @@ class Parser {
       $parent.data('title', title);
 
       // add to contents
-      if (i != 0) {
-        const anchor = `anchor-${title}`;
-        const anchorId = i + anchor;
-        let text = $(e).text();
-        let itemClass = 'item';
-        $parent.attr('id', anchor);
-        $parent.data('anchor', '#' + anchorId)
+      const anchor = this.sanitise(`anchor-${title}`);
+      const anchorId = i + anchor;
+      let text = $(e).text();
+      let itemClass = 'item';
+      $parent.attr('id', anchor);
+      $parent.data('anchor', '#' + anchorId)
 
-        if ($(e).hasClass('sub-section')) {
-          subsec++;
-          text = `${sec}.${subsec} ${text}`;
-          itemClass = itemClass + ' sub-section';
-        } else {
-          sec++;
-          subsec = 0;
-          text = `${sec} ${text}`;
+      if ($(e).hasClass('sub-section')) {
+        subsec++;
+        text = `${sec}.${subsec} ${text}`;
+        itemClass = itemClass + ' sub-section';
+      } else {
+        sec++;
+        subsec = 0;
+        text = `${sec} ${text}`;
+        if (i == 0) {
+          text += ' (introduction)';
         }
-
-        const $item = $('<div />', {class: itemClass, id: anchorId}).append($('<a />', {href: `#${anchor}`, text: text}))
-        $contents.append($item);
       }
+
+      const $item = $('<div />', {class: itemClass, id: anchorId}).append($('<a />', {href: `#${anchor}`, text: text}))
+      $contents.append($item);
     });
   }
 
@@ -111,13 +119,12 @@ class Parser {
     wikitext = wikitext.replace(new RegExp(this.map.placeholder, 'g'), '');
 
     // html tags
-    for (var key in this.map.tags) {
-      if (this.map.tags.hasOwnProperty(key)) {
-        const tags = this.map.tags[key];
-        const len = tags.length;
-        let i = 0;
-        wikitext = wikitext.replace(new RegExp(key, 'g'), (len == 1) ? tags[i] : (e) => { return tags[i++ % len]; });
-      }
+    for (var i=0, len=this.map.tags.length; i<len; ++i) {
+      const key = this.map.tags[i][0];
+      const tags = this.map.tags[i][1];
+      const len = tags.length;
+      let index = 0;
+      wikitext = wikitext.replace(new RegExp(key, 'g'), (len == 1) ? tags[index] : (e) => { return tags[index++ % len]; });
     }
 
     // create wrapper
@@ -152,15 +159,31 @@ class Parser {
     return wrapper;
   }
 
-  // TODO fix
+  parseQuotes(wrapper) {
+    wrapper.find('.quote').each((i, e) => {
+      $(e).before($('<blockquote />', {html: $(e).html().split('|')[1]})).remove();
+    });
+  }
 
-  build(wrapper) {
-    //this.parseLinks(wrapper);
-    //this.parseNotes(wrapper);
-    //this.parseExternalLinks(wrapper);
-    //this.parseReferences(wrapper);
-    //this.parseQuotes(wrapper);
-    //this.parseSections(wrapper);
+  parseAllTags(wrapper) {
+    // insert tags
+    wrapper.find('.section').each((i, e) => {
+      const p = $(e).find('.section-paragraph');
+      const t = $(e).find('.section-tags');
+      const tags = t.children('span, a, ref');
+      let index = 0;
+      let html = p.html().replace(new RegExp(this.map.placeholder, 'g'), (x) => {
+        return tags[index++].outerHTML;
+      });
+      p.html(html);
+      t.remove();
+    });
+
+    // format
+    this.parseNotes(wrapper);
+    this.parseLinks(wrapper);
+    this.parseReferences(wrapper);
+    this.parseExternalLinks(wrapper);
   }
 
   parseNotes(wrapper) {
@@ -183,18 +206,14 @@ class Parser {
     });
   }
 
-  parseQuotes(wrapper) {
-    wrapper.find('.quote').each((i, e) => {
-      $(e).before($('<blockquote />', {html: $(e).html().split('|')[1]})).remove();
-    });
-  }
-
   parseLinks(wrapper) {
     wrapper.find('a').each((i, e) => {
-      const inner = e.innerHTML.split('|');
-      e.href = this.urlBase + inner[0].replace(/ /g, '_');
-      e.innerHTML = (inner.length > 1) ? inner[1] : e.innerHTML;
-      e.target = '_blank';
+      if (!e.href) {
+        const inner = e.innerHTML.split('|');
+        e.href = this.urlBase + inner[0].replace(/ /g, '_');
+        e.innerHTML = (inner.length > 1) ? inner[1] : e.innerHTML;
+        e.target = '_blank';
+      }
     });
   }
 
@@ -276,7 +295,6 @@ class Parser {
         if (pair.length > 2) {
           pair[1] = pair.splice(1, pair.length - 1).join('=');
         }
-
         ref[pair[0]] = pair[1].trim();
       }
     }
@@ -304,6 +322,10 @@ class Parser {
 
   getLetter(n) {
     return String.fromCharCode(97 + ((n - 1) % 26));
+  }
+
+  sanitise(text) {
+    return text.replace(/[^a-z0-9-_]/ig, '');
   }
 }
 

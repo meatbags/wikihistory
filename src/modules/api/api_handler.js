@@ -12,6 +12,7 @@ class APIHandler {
   getPage(title) {
     // build request string, get page
     const req = `${this.endpoint}${this.action}&titles=${title.replace(/ /g, '%20')}${this.props}${this.format}`;
+    console.log('Request:', req);
     return new Promise((resolve, reject) => {
       $.ajax({
         type: 'POST',

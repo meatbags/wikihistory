@@ -8,14 +8,24 @@ class Master {
     this.users = {};
 
     // test
-    //this.api.getPage('Dark Souls');
+    this.getSample('Bjork');
+    //this.getSample('Donald Trump');
+  }
 
-    this.api.sampleRequest('Dark Souls')
-      .then((res) => { this.parseResponse(res); })
+  getPage(title) {
+    this.api.getPage(title)
+      .then((res) => { this.onResponse(res); })
       .catch((err) => { console.warn('Err', err); });
   }
 
-  parseResponse(res) {
+  getSample(title) {
+    this.api.sampleRequest(title)
+      .then((res) => { this.onResponse(res); })
+      .catch((err) => { console.warn('Err', err); });
+  }
+
+  onResponse(res) {
+    console.log(res);
     const key = this.api.formatTitle(res.query.pages[0].title);
     if (!this.pages[key]) {
       this.pages[key] = new Page(res.query.pages[0]);

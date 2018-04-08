@@ -7,8 +7,8 @@ const TOKEN_UNIQUE = '+';
 class Analyser {
   constructor() {
     this.regex = {
-      splitText: /[^a-z0-9]/ig,
-      prefixOk: /[^a-zA-Z]/
+      splitText: / /g,
+      prefixOk: /[^a-z]/i
     };
     this.tokens = [];
     this.words = {
@@ -27,36 +27,46 @@ class Analyser {
     this.words.total = 0;
   }
 
-  getAmountChanged() {
+  getChanged() {
     if (this.words.total) {
-      return [
-        this.words.added / this.words.total,
-        this.words.deleted / this.words.total,
-        this.words.shifted / this.words.total
-      ];
+      return {
+        added: this.words.added / this.words.total,
+        deleted: this.words.deleted / this.words.total,
+        shifted: this.words.shifted / this.words.total
+      };
     } else {
-      return [0, 0, 0];
+      return {
+        added: 0, deleted: 0, shifted: 0
+      };
     }
   }
 
   mark(elem) {
     // mark element with edit tags
     let index = 0;
-    let html = elem.text();
+    let html = elem.html();
     const noIndex = [];
     const spanClose = '</span>';
 
-    for (var i=0, len=this.tokens.length; i<len; ++i) {
-      const str = this.tokens[i][0];
-      const token = this.tokens[i][1];
-      let nextIndex = this.getNextIndex(html, str, index);
+    console.log('HTML', elem, html);
 
-      if (nextIndex != -1) {
-        const span = this.tokenTag(token) + str + spanClose;
-        html = this.replaceAfterIndex(html, str, span, nextIndex);
-        index = nextIndex + span.length;
+    for (var i=0, len=this.tokens.length; i<len; ++i) {
+      const token = this.tokens[i][1];
+      const str = this.tokens[i][0];
+
+      if (token != TOKEN_SAME) {
+        let nextIndex = this.getNextIndex(html, str, index);
+
+        if (nextIndex != -1) {
+          const span = this.tokenTag(token) + str + spanClose;
+          html = this.replaceAfterIndex(html, str, span, nextIndex);
+          index = nextIndex + span.length;
+        } else {
+          noIndex.push(str);
+        }
       } else {
-        noIndex.push(str);
+        // ignore, increment
+        index += str.length;
       }
     }
 
@@ -64,6 +74,22 @@ class Analyser {
       console.warn(elem.parent().attr('id'), 'Null index:', noIndex.length, noIndex.join('__'));
     }
     elem.html(html);
+  }
+
+  markAnchor(anchor) {
+    const edits = $('<div />', {class: 'item-edits'});
+
+    if (this.words.added) {
+      edits.append('+');
+    }
+    if (this.words.deleted) {
+      edits.append('-');
+    }
+    if (this.words.shifted) {
+      edits.append('>');
+    }
+
+    anchor.append(edits);
   }
 
   getNextIndex(text, str, index) {
@@ -109,7 +135,6 @@ class Analyser {
     const keys = this.sanitisedWordArray(s1);
     const a = keys.map(this.getWordValue);
     const b = this.sanitisedWordArray(s2).map(this.getWordValue);
-    //console.log(keys);
 
     // map words to edit tokens
     this.reset();
@@ -133,7 +158,7 @@ class Analyser {
             if (this.eq(ai, b[j])) {
               this.tokens.push([key, TOKEN_RIGHT]);
               b.splice(j, 1);
-              index = clamp(index, 0, b.length - 1);
+              index = clamp(index - 1, 0, b.length - 1);
               success = true;
               this.words.shifted++;
               break;
@@ -171,14 +196,14 @@ class Analyser {
   }
 
   getWordValue(word) {
-    // get single values for word (fuzzy)
-    word = word.toLowerCase();
+    // get fuzzy word data
     let n1 = 0;
     let n2 = 0;
+
     for (var i=0, len=word.length; i<len; ++i) {
       const char = word[i].charCodeAt();
       n1 += char;
-      n2 ^= (i % 3) ? char : -char; // defuzz anagrams a bit (good enough)
+      n2 ^= (i % 3) ? char : -char;
     }
 
     return [n1, n2];

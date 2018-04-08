@@ -20,6 +20,13 @@
           font-size: $fontMax;
         }
       }
+
+      .section-paragraph {
+      }
+
+      .section-tags {
+        display: none;
+      }
     }
 
     .contents {
@@ -28,9 +35,15 @@
       padding-left: $space * 2;
 
       .item {
+        display: flex;
+        justify-content: flex-start;
+
         a {
-          flex: 1;
           padding: $space / 4;
+        }
+
+        .item-edits {
+          padding-left: $space / 2;
         }
 
         &.sub-section {

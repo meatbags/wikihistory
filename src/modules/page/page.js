@@ -15,12 +15,12 @@ class Page {
   }
 
   addPageData(page) {
-    // sample page
+    // NOTE testing, oldest VS newest
     const a = new Revision(this.title, page.revisions[0]);
-    const b = new Revision(this.title, page.revisions[1]);
+    const b = new Revision(this.title, page.revisions[page.revisions.length - 1]);
     this.revisions.push(a, b);
     this.target.html(this.revisions[this.currentRevision].getHtml());
-    //a.comparePrevious(b);
+    a.comparePrevious(b);
   }
 }
 
