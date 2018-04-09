@@ -4,6 +4,7 @@
 - lump spans together
 - parse common infoboxes
 - rm uncommon infoboxes
+- per section analysis box?
 
 ## future features
 - revision calendar w/ DMY resolution

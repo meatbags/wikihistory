@@ -48,8 +48,6 @@ class Analyser {
     const noIndex = [];
     const spanClose = '</span>';
 
-    console.log('HTML', elem, html);
-
     for (var i=0, len=this.tokens.length; i<len; ++i) {
       const token = this.tokens[i][1];
       const str = this.tokens[i][0];

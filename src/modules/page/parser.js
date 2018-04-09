@@ -6,9 +6,7 @@ class Parser {
     this.map = {
       placeholder: '___',
       tags: [
-        [/=====/, ["<div class='section-title sub-section italics'>", "</div>"]],
-        [/====/, ["<div class='section-title sub-section italics'>", "</div>"]],
-        [/===/, ["<div class='section-title sub-section italics'>", "</div>"]],
+        [/=====|====|===/, ["<div class='section-title sub-section italics'>", "</div>"]],
         ["==", ["<div class='section-title'>", "</div>"]],
         ["\n", ["<br />"]],
         ["{{", ["<span class='c'>"]],
@@ -24,10 +22,11 @@ class Parser {
         "cite": "cite",
         "citation": "cite",
         "reflist": "reflist",
+        "quote box": "quote-box",
         "quote": "quote",
         "official website": "ext-link"
       },
-      delete: ["thumb", "about||", "expand section", "use", "infobox", "video game reviews"]
+      delete: ["thumb", "about|", "expand section", "use", "infobox", "video game reviews", "main article"]
     };
     this.sections = {};
   }
@@ -160,6 +159,18 @@ class Parser {
   }
 
   parseQuotes(wrapper) {
+    wrapper.find('.quote-box').each((i, e) => {
+      const arr = $(e).html().split('|');
+      let html = '';
+      let start = false;
+      for (var i=0, len=arr.length; i<len; ++i) {
+        if (start || arr[i].search(/quote=/) > -1) {
+          start = true;
+          html += arr[i].replace(/quote=/, '');
+        }
+      }
+      $(e).before($('<blockquote />', {html: html})).remove();
+    });
     wrapper.find('.quote').each((i, e) => {
       $(e).before($('<blockquote />', {html: $(e).html().split('|')[1]})).remove();
     });
@@ -207,14 +218,20 @@ class Parser {
   }
 
   parseLinks(wrapper) {
-    wrapper.find('a').each((i, e) => {
-      if (!e.href) {
-        const inner = e.innerHTML.split('|');
-        e.href = this.urlBase + inner[0].replace(/ /g, '_');
-        e.innerHTML = (inner.length > 1) ? inner[1] : e.innerHTML;
-        e.target = '_blank';
-      }
-    });
+    wrapper.find('.section-paragraph').each((index, elem) => {
+      $(elem).children('a').each((i, e) => {
+        if (!e.href) {
+          const inner = e.innerHTML.split('|');
+          if (inner[0].search(/File/) == 0) {
+            $(e).remove();
+          } else {
+            e.href = this.urlBase + inner[0].replace(/ /g, '_');
+            e.innerHTML = (inner.length > 1) ? inner[1] : e.innerHTML;
+            e.target = '_blank';
+          }
+        }
+      })
+    })
   }
 
   parseReferences(wrapper) {
