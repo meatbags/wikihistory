@@ -3,8 +3,17 @@
   display: flex;
   justify-content: center;
 
-  .content {
+  .content-left {
     min-height: 100vh;
-    width: $width;
+    width: 35%;
+    padding-left: $space;
+    padding-right: $space / 2;
+  }
+
+  .content-right {
+    min-height: 100vh;
+    width: 65%;
+    padding-right: $space;
+    padding-left: $space / 2;
   }
 }

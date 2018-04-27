@@ -3,22 +3,29 @@ import { Analyser } from './analyser';
 
 class Revision {
   constructor(title, data) {
+    // revision object
     this.title = title;
     this.revid = data.revid;
     this.parentid = data.parentid;
     this.user = data.user;
     this.userid = data.anon ? -1 : data.userid;
     this.timestamp = data.timestamp;
-    this.comment = data.comment | '';
-    this.content = data.content;
-    this.parser = new Parser();
-    this.analyser = new Analyser();
-    this.sections = {};
-    this.parse();
+    this.comment = data.comment || '';
+    this.content = data.content || '';
+
+    // parse given content
+    if (this.content) {
+      this.parse();
+    }
   }
 
   parse() {
-    // parse wikitext, prepare for analysis
+    // prep
+    this.sections = {};
+    this.parser = new Parser();
+    this.analyser = new Analyser();
+
+    // parse wikitext
     this.wrapper = this.parser.createWrapper(this.title, this.content, 'page__inner');
     this.wrapper.find('.section').each((i, e) => {
       const id = 'section-' + this.parser.sanitise($(e).data('title'));
@@ -28,8 +35,8 @@ class Revision {
     });
   }
 
-  comparePrevious(rev) {
-    // compare revisions, mark changes, analyse
+  compareRevision(rev) {
+    // compare revision, marking changes
     for (var key in this.sections) {
       if (this.sections.hasOwnProperty(key)) {
         const parent = $(key).parent();
@@ -39,14 +46,14 @@ class Revision {
           this.analyser.markAnchor($(parent.data('anchor')));
           this.analyser.mark($(key));
         } else {
-          // new section
+          // a new section
           parent.addClass('new');
           $(parent.data('anchor')).addClass('new');
         }
       }
     }
 
-    // reform html
+    // convert tags to HTML
     this.parser.parseAllTags(this.wrapper);
   }
 

@@ -7,8 +7,9 @@ class Page {
     this.title = data.title;
     this.currentRevision = 0;
     this.revisions = [];
+    this.root = $('#content-root');
     this.target = $('<div />', {class: 'page', id: this.id});
-    $('.content').append(this.target);
+    this.root.append(this.target);
 
     // set up page
     this.addPageData(data);
@@ -20,7 +21,7 @@ class Page {
     const b = new Revision(this.title, page.revisions[page.revisions.length - 1]);
     this.revisions.push(a, b);
     this.target.html(this.revisions[this.currentRevision].getHtml());
-    a.comparePrevious(b);
+    a.compareRevision(b);
   }
 }
 
