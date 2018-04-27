@@ -10,13 +10,18 @@ class Master {
     this.users = {};
 
     // test
-    this.getSample('Bjork');
-    //this.getSample('Donald Trump');
+
+    this.getMeta('A Wind Named Amnesia');
+  }
+
+  getMeta(title) {
+    // get meta
+    this.api.getRevMeta(title).then((r) => { console.log(r); }).catch((e) => { console.warn(e); });
   }
 
   getPage(title) {
     // get page via API
-    this.api.getPage(title).then((res) => {
+    this.api.getRevContent(title).then((res) => {
       this.onResponse(res);
     }).catch((err) => {
       console.warn('Err', err);
@@ -25,7 +30,9 @@ class Master {
 
   getSample(title) {
     // get page via sample dir
-    this.api.sampleRequest(title).then((res) => { this.onResponse(res); }).catch((err) => {
+    this.api.getRevSampleContent(title).then((res) => {
+      this.onResponse(res);
+    }).catch((err) => {
       console.warn('Err', err);
     });
   }
