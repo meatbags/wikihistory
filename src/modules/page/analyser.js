@@ -1,4 +1,5 @@
-import { clamp } from '../maths';
+import { clamp } from '../utils';
+
 const TOKEN_SAME = '==';
 const TOKEN_LEFT = '<<';
 const TOKEN_RIGHT = '>>';

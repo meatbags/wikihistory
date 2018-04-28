@@ -10,13 +10,18 @@ class Master {
     this.users = {};
 
     // test
-
-    this.getMeta('A Wind Named Amnesia');
+    this.title = 'A Wind Named Amnesia';
+    this.key = this.api.formatTitle(this.title);
+    this.getSampleMeta(this.title);
   }
 
   getMeta(title) {
     // get meta
-    this.api.getRevMeta(title).then((r) => { console.log(r); }).catch((e) => { console.warn(e); });
+    this.api.getRevMeta(title).then((r) => {
+      console.log(r);
+    }).catch((e) => {
+      console.warn(e);
+    });
   }
 
   getPage(title) {
@@ -28,9 +33,18 @@ class Master {
     });
   }
 
-  getSample(title) {
+  getSampleMeta(title) {
+    // get meta via sample dir
+    this.api.getSampleMeta(title).then((res) => {
+      this.onResponse(res);
+    }).catch((err) => {
+      console.warn('Err', err);
+    });
+  }
+
+  getSamplePage(title) {
     // get page via sample dir
-    this.api.getRevSampleContent(title).then((res) => {
+    this.api.getSampleContent(title).then((res) => {
       this.onResponse(res);
     }).catch((err) => {
       console.warn('Err', err);
@@ -46,6 +60,12 @@ class Master {
     } else {
       this.pages[key].addPageData(res.query.pages[0]);
     }
+
+    this.afterResponse();
+  }
+
+  afterResponse() {
+    this.ui.generateHeatmap(this.pages[this.key].getDateMap());
   }
 }
 

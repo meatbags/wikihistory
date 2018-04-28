@@ -1,8 +1,71 @@
+$daySize: 10px;
+
 .ui-wrapper {
   padding: $space;
 
   #ui-root {
     width: 100%;
     z-index: $zNav;
+
+    .search {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      padding-bottom: $space / 2;
+
+      input {
+        padding-left: $space / 4;
+      }
+    }
+
+    .heatmap {
+      width: 100%;
+      overflow-x: scroll;
+
+      .timeline {
+        min-width: 100%;
+
+        .timeline-labels {
+          width: 100%;
+          display: flex;
+          justify-content: flex-start;
+
+          .timeline-labels__label {
+            padding-left: $space / 2;
+            font-size: $fontSmall;
+          }
+        }
+
+        .timeline-heatmap {
+          min-width: 100%;
+          position: relative;
+          height: $daySize * 7 + $space;
+          padding-top: $space / 2;
+          padding-bottom: $space / 2;
+          display: flex;
+          justify-content: flex-start;
+          float: left;
+
+          .year {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            outline: 1px solid red;
+
+            .day {
+              width: $daySize;
+              height: $daySize;
+
+              &.hidden {
+                opacity: 0;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

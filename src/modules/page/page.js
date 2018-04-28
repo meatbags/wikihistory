@@ -1,18 +1,34 @@
 import { Revision } from './revision';
+import { DateMap } from './date_map';
 
 class Page {
   constructor(data) {
-    // page data container
-    this.id = data.pageid;
-    this.title = data.title;
+    // props
     this.currentRevision = 0;
-    this.revisions = [];
+
+    // parse meta
+    this.meta(data);
+
+    // doc
     this.root = $('#content-root');
     this.target = $('<div />', {class: 'page', id: this.id});
     this.root.append(this.target);
 
     // set up page
-    this.addPageData(data);
+    // this.addPageData(data);
+  }
+
+  meta(data) {
+    this.id = data.pageid;
+    this.title = data.title;
+    this.revisions = data.revisions;
+
+    // dates
+    this.dateMap = new DateMap(this.revisions);
+  }
+
+  getDateMap() {
+    return this.dateMap;
   }
 
   addPageData(page) {
