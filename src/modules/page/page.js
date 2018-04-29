@@ -27,6 +27,12 @@ class Page {
     this.dateMap = new DateMap(this.revisions);
   }
 
+  getRevisionsByDate(y, m, d) {
+    return this.dateMap.getRevisionIndices(y, m, d).map((i) => {
+      return this.revisions[i];
+    });
+  }
+
   getDateMap() {
     return this.dateMap;
   }

@@ -10,7 +10,16 @@ class DateMap {
     this.mapFrequency(revs);
   }
 
+  getRevisionIndices(y, m, d) {
+    if (this.freq[y] && this.freq[y][m] && this.freq[y][m][d]) {
+      return this.freq[y][m][d].indices;
+    } else {
+      return [];
+    }
+  }
+
   mapFrequency(revs) {
+    // get daily revision frequency
     this.freq = {total: 0};
 
     for (var i=0, len=revs.length; i<len; ++i) {
@@ -28,29 +37,32 @@ class DateMap {
       // set day
       if (this.freq[y][m][d] === undefined) {
         const sel = `#${y}-${m}-${d}`;
-        this.freq[y][m][d] = {total: 1, selector: sel};
+        this.freq[y][m][d] = {total: 1, selector: sel, indices:[i]};
       } else {
         this.freq[y][m][d].total += 1;
+        this.freq[y][m][d].indices.push(i);
       }
     }
   }
 
-  chart(item) {
+  chart(item, y, m, d) {
+    // colour chart item (day)
     var c = 1.0 - (clamp(item.total / this.threshold, 0.0, 1.0) * 0.9 + 0.1);
     c = Math.round(c * 255);
     c = c < 16 ? '0' + c.toString(16) : c.toString(16);
     c = `#${c}${c}${c}`;
     const $e = $(item.selector);
     $e.css({background: c});
-    $e.prop('title', item.total);
+    const title = `${item.total} ${(item.total > 1) ? 'edits' : 'edit'}, ${(new Date(y, m, d)).toDateString()}`;
+    $e.prop('title', title);
   }
 
   chartFrequency(target) {
-    console.log(target, this.freq);
+    // colour time chart
     for (var y in this.freq) {
       for (var m in this.freq[y]) {
         for (var d in this.freq[y][m]) {
-          this.chart(this.freq[y][m][d]);
+          this.chart(this.freq[y][m][d], y, m, d);
         }
       }
     }

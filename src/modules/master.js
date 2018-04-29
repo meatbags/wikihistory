@@ -65,7 +65,8 @@ class Master {
   }
 
   afterResponse() {
-    this.ui.generateHeatmap(this.pages[this.key].getDateMap());
+    this.ui.setTarget(this.pages[this.key]);
+    this.ui.generateHeatmap();
   }
 }
 

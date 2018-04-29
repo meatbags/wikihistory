@@ -1,10 +1,63 @@
 class Interface {
   constructor() {
+    this.target = null;
     this.root = $('#ui-root');
+    this.events();
   }
 
-  generateHeatmap(dateMap) {
+  setTarget(target) {
+    this.target = target;
+  }
+
+  events() {
+    this.root.on('click', '.day', (e) => {
+      if (this.target && e.currentTarget.title) {
+        this.toggleListRevisions(e.currentTarget);
+      }
+    });
+  }
+
+  toggleListRevisions(e) {
+    // revisions to/from list
+    const $e = $(e);
+    const ymd = e.id.split('-');
+    const uid = `rev-li-${ymd[0]}${ymd[1]}${ymd[2]}`;
+    $e.toggleClass('active');
+
+    // reset newest
+    $('.revision-list__inner .item.newest').removeClass('newest');
+
+    if ($e.hasClass('active')) {
+      const revs = this.target.getRevisionsByDate(ymd[0], ymd[1], ymd[2]);
+      if (revs.length) {
+        this.addListRevisions(revs, uid);
+      }
+    } else {
+      $('#' + uid).remove();
+    }
+  }
+
+  addListRevisions(revs, uid) {
+    // construct
+    const date = (new Date(revs[0].timestamp)).toDateString()
+    const title = `${date} (${revs.length})`;
+    const content = revs.map((e) => {
+      return `<div class="item__content__rev">
+        <span class='bold'>${e.user}</span>&nbsp;
+        <span class='tiny'>${e.comment}</span>
+      </div>`;
+    }).join('');
+    const $wrapper = $('<div />', {id: uid, class: 'item newest'})
+      .append($('<div />', {class: 'item__title', html: title}))
+      .append($('<div />', {class: 'item__content', html: content}));
+
+    // add to doc
+    $('.revision-list__inner').append($wrapper);
+  }
+
+  generateHeatmap() {
     // get limits
+    const dateMap = this.target.getDateMap();
     const from = new Date(dateMap.earliest);
     const to = new Date();
     const y1 = from.getFullYear();
@@ -21,6 +74,7 @@ class Interface {
     // sizing
     const daySize = 10;
     let heatmapWidth = 0;
+    let evenMonth = false;
 
     for (var y=y1; y<=y2; ++y) {
       const year = $('<div />', {class: 'year'});
@@ -30,21 +84,25 @@ class Interface {
       const mstop = (y == y2) ? m2 : 11;
       let daysInYear = startDay;
 
-      // add padding days
+      // add offset days
       for (var i=0; i<startDay; ++i) {
         year.append($('<div />', {class: 'day hidden'}));
       }
 
+      // iterate months, add days
       for (var m=mstart; m<=mstop; ++m) {
         let date = 1;
         const days = new Date(y, m + 1, 0).getDate();
         daysInYear += days;
         for (var d=0; d<days; ++d) {
           const uid = `${y}-${m}-${date++}`;
-          year.append($('<div />', {id: uid, class: 'day'}));
+          const classes = 'day' + (evenMonth ? '' : ' alt');
+          year.append($('<div />', {id: uid, class: classes}));
         }
+        evenMonth = (evenMonth == false);
       }
 
+      // resize elements
       const w = daySize * Math.ceil(daysInYear / 7);
       heatmapWidth += w;
       year.css({width: w});
@@ -59,6 +117,9 @@ class Interface {
 
     // show frequency
     dateMap.chartFrequency(this.heatMap);
+
+    // go to end of timeline
+    $('.heatmap').scrollLeft(heatmapWidth);
   }
 }
 

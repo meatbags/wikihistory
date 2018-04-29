@@ -53,17 +53,69 @@ $daySize: 10px;
             flex-wrap: wrap;
             justify-content: flex-start;
             align-items: flex-start;
-            outline: 1px solid red;
 
             .day {
               width: $daySize;
               height: $daySize;
+              outline: none;
+
+              &.alt {
+                background-color: #f4f4f4;
+              }
+
+              &.active {
+                border: 1px solid black;
+              }
 
               &.hidden {
                 opacity: 0;
               }
             }
           }
+        }
+      }
+    }
+
+    .revision-list {
+      margin-top: $space;
+      height: 150px;
+      overflow-x: hidden;
+      overflow-y: scroll;
+
+      .revision-list__inner {
+        .item {
+          margin-bottom: $space / 2;
+          font-size: $fontSmall;
+          display: flex;
+
+          &.newest {
+            background: $highlight;
+          }
+
+          .item__title {
+            width: 33%;
+          }
+
+          .item__content {
+            width: 67%;
+
+            .item__content__rev {
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+
+    .work-area {
+      margin-top: $space;
+      height: 150px;
+      overflow-x: hidden;
+      overflow-y: scroll;
+
+      .work-area__inner {
+        .item {
+
         }
       }
     }

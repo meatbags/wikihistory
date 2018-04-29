@@ -2,12 +2,17 @@ $fontStack: 'Lato', sans-serif;
 $fontSerif: 'Playfair Display', sans-serif;
 $lineHeight: 1.5;
 $fontSize: 14px;
+$fontTiny: 10px;
 $fontSmall: 12px;
 $fontLarge: 20px;
 $fontMax: 30px;
 
 .bold {
   font-weight: bold;
+}
+
+.tiny {
+  font-size: $fontTiny;
 }
 
 .italics {
