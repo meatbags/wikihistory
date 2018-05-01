@@ -21,6 +21,9 @@ class Interface {
         this.timeline.toggleListRevisions(e.currentTarget);
       }
     });
+    this.root.on('click', '.revision-list__inner .item .close', (e) => {
+      this.timeline.removeListRevision($(e.currentTarget).parent().parent());
+    });
   }
 }
 

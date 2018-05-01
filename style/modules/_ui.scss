@@ -94,6 +94,18 @@ $daySize: 10px;
 
           .item__title {
             width: 30%;
+            display: flex;
+
+            .close {
+              padding-right: $space;
+              text-align: right;
+              flex: 1;
+              cursor: pointer;
+
+              &.hover {
+                opacity: 0.5;
+              }
+            }
           }
 
           .item__content {
@@ -109,6 +121,7 @@ $daySize: 10px;
 
               .status {
                 width: 25%;
+                font-style: italic;
               }
             }
           }

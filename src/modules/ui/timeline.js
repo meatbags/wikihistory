@@ -12,7 +12,7 @@ class Timeline {
     // revisions to/from list
     const $e = $(e);
     const ymd = e.id.split('-');
-    const uid = `rev-li-${ymd[0]}${ymd[1]}${ymd[2]}`;
+    const uid = `revli-${ymd[0]}${ymd[1]}${ymd[2]}`;
     $e.toggleClass('active');
 
     // reset highlight
@@ -22,7 +22,7 @@ class Timeline {
     if ($e.hasClass('active')) {
       const revs = this.target.getRevisionsByDate(ymd[0], ymd[1], ymd[2]);
       if (revs.length) {
-        this.addListRevisions(revs, uid);
+        this.addListRevisions(revs, uid, e.id);
       }
     } else {
       $('#' + uid).remove();
@@ -35,7 +35,7 @@ class Timeline {
     return `${day < 10 ? '0' + day : day} ${this.months[d.getMonth()]} ${d.getFullYear()}`;
   }
 
-  addListRevisions(revs, uid) {
+  addListRevisions(revs, uid, parentId) {
     // construct
     const title = `${this.getDateTitle(revs[0].timestamp)} (${revs.length})`;
     const content = revs.map((e) => {
@@ -46,19 +46,22 @@ class Timeline {
         }))
         .append($('<div />', {
           class: 'status',
-          html: 'x'
+          html: 'pending'
         }));
       rev.data('id', e.revid);
       rev.data('timestamp', e.timestamp);
 
-      return rev[0].outerHTML;
-    }).join('');
+      return rev;
+    });
     const $wrapper = $('<div />', {id: uid, class: 'item newest'})
-      .append($('<div />', {class: 'item__title', html: title}))
-      .append($('<div />', {class: 'item__content', html: content}));
+      .append($('<div />', {class: 'item__title', html: title}).append($('<div />', {class: 'close', html:'x'})))
+      .append($('<div />', {class: 'item__content'}).append(content));
 
-    // add to doc (order by timestamps)
+    // data tags
     $wrapper.data('timestamp', revs[0].timestamp);
+    $wrapper.data('parent', '#' + parentId)
+
+    // order by time descending
     const ms = new Date(revs[0].timestamp).getTime();
     const items = $('.revision-list__inner .item');
 
@@ -80,6 +83,11 @@ class Timeline {
     } else {
       $('.revision-list__inner').append($wrapper);
     }
+  }
+
+  removeListRevision(rev) {
+    $(rev.data('parent')).removeClass('active');
+    rev.remove();
   }
 
   generateHeatmap() {
