@@ -39,10 +39,19 @@ class Timeline {
     // construct
     const title = `${this.getDateTitle(revs[0].timestamp)} (${revs.length})`;
     const content = revs.map((e) => {
-      return `<div class="item__content__rev">
-        <span class='bold'>${e.user}</span>&nbsp;
-        <span class='tiny'>${e.comment}</span>
-      </div>`;
+      var rev = $('<div />', {id: e.revid, class: 'item__content__rev'})
+        .append($('<div />', {
+          class: 'info',
+          html: `<span class='bold'>${e.user}</span>&nbsp;<span class='tiny'>${e.comment}</span>`
+        }))
+        .append($('<div />', {
+          class: 'status',
+          html: 'x'
+        }));
+      rev.data('id', e.revid);
+      rev.data('timestamp', e.timestamp);
+
+      return rev[0].outerHTML;
     }).join('');
     const $wrapper = $('<div />', {id: uid, class: 'item newest'})
       .append($('<div />', {class: 'item__title', html: title}))

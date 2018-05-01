@@ -78,7 +78,7 @@ $daySize: 10px;
 
     .revision-list {
       margin-top: $space;
-      height: 150px;
+      height: 320px;
       overflow-x: hidden;
       overflow-y: scroll;
 
@@ -93,29 +93,46 @@ $daySize: 10px;
           }
 
           .item__title {
-            width: 33%;
+            width: 30%;
           }
 
           .item__content {
-            width: 67%;
+            width: 70%;
 
             .item__content__rev {
               cursor: pointer;
+              display: flex;
+
+              .info {
+                width: 75%;
+              }
+
+              .status {
+                width: 25%;
+              }
             }
           }
         }
       }
     }
 
-    .work-area {
-      margin-top: $space;
-      height: 150px;
-      overflow-x: hidden;
-      overflow-y: scroll;
+    .controls {
+      width: 100%;
+      font-size: $fontSmall;
 
-      .work-area__inner {
-        .item {
+      .controls__inner {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
 
+        .control {
+          user-select: none;
+          padding: $space/2 $space $space/2 $space;
+          cursor: pointer;
+
+          &:hover {
+            opacity: 0.5;
+          }
         }
       }
     }
