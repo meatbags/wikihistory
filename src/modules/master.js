@@ -66,7 +66,6 @@ class Master {
 
   afterResponse() {
     this.ui.setTarget(this.pages[this.key]);
-    this.ui.generateHeatmap();
   }
 }
 
